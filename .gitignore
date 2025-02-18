@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Node.js dependencies
+node_modules/
+.next/
+out/
+package-lock.json
+
+# Environment files
+.env
+.env.local
+
+# Docker files
+docker-compose.override.yml
+*.log

@@ -4,17 +4,20 @@ FROM node:18
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json first (for better caching)
 COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm install
 
+# Copy the entire project
+COPY . .
+
+# Build Next.js app for production
+RUN npm run build
+
 # Expose port 3000
 EXPOSE 3000
 
-# Install Docker CLI inside the container
-RUN apt-get update && apt-get install -y docker.io
-
-# Run as root (no user switching needed)
-CMD ["npm", "run", "dev"]
+# Start Next.js in production mode
+CMD ["npm", "run", "start"]
