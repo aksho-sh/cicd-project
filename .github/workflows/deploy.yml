@@ -43,6 +43,8 @@ jobs:
       - name: Scale Down the tasks currently running
         run: |
           aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER }} --service ${{ secrets.ECS_SERVICE }} --desired-count 0
+          echo "Waiting for tasks to fully stop..."
+          sleep 30  # Wait to ensure resources are freed
 
       - name: Deploy to Amazon ECS
         run: |
