@@ -5,6 +5,7 @@ export default function Home(){
       <p>We will change this and push to see if the pipeline is actually working:</p>
       <ul>
         <li>The first component of the list, the project has been modified here.</li>
+        <li>Something was added in this point of the list.</li>
       </ul>
     </div>
   );
