@@ -10,6 +10,7 @@ export default function Home(){
 
       <ul>
         <li>This is another list that was created 7:55 2/18/2025</li>
+        <li>Another element in the list, lets see if this works.</li>
       </ul>
     </div>
   );
