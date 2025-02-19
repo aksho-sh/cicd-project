@@ -9,10 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Environment Variables
-        run: |
-          echo "AWS_REGION: $AWS_REGION"
-          echo "ECR_REPOSITORY_URI: $ECR_REPOSITORY_URI"
       
       - name: Set Environment Variables
         run: |
@@ -34,36 +30,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Debug AWS Credentials
-        run: |
-          echo "AWS Account ID: $(aws sts get-caller-identity --query Account --output text)"
-          echo "AWS Region: $AWS_REGION"
-          echo "Checking ECR repositories..."
-          aws ecr describe-repositories --region $AWS_REGION
-
-      - name: Manually Login to Amazon ECR
-        run: |
-          export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          echo "Logging into ECR for account $AWS_ACCOUNT_ID in region $AWS_REGION"
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-
-
-      - name: Check ECR Access
-        run: aws ecr describe-repositories --region us-east-1
-
-      - name: Debug AWS Credentials
-        run: aws sts get-caller-identity
-
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY_URI }}
 
       - name: Build and Push Docker Image
         run: |
           docker build -t nextjs-app .
-          docker tag nextjs-app:latest $ECR_REPOSITORY_URI:latest
-          docker push $ECR_REPOSITORY_URI:latest
+          docker tag nextjs-app:latest ${{ secrets.ECR_REPOSITORY_URI }}:latest
+          docker push ${{ secrets.ECR_REPOSITORY_URI }}:latest
 
       - name: Deploy to Amazon ECS
         run: |
-          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
+          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER }} --service ${{ secrets.ECS_SERVICE }} --force-new-deployment
