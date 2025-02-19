@@ -9,6 +9,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug Environment Variables
+        run: |
+          echo "AWS_REGION: $AWS_REGION"
+          echo "ECR_REPOSITORY_URI: $ECR_REPOSITORY_URI"
+      
+      - name: Set Environment Variables
+        run: |
+          echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
+          echo "ECR_REPOSITORY_URI=418272772550.dkr.ecr.us-east-1.amazonaws.com/nextjs-app" >> $GITHUB_ENV
+
+      - name: Debug Environment Variables
+        run: |
+          echo "AWS_REGION: $AWS_REGION"
+          echo "ECR_REPOSITORY_URI: $ECR_REPOSITORY_URI"
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -18,6 +33,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Debug AWS Credentials
+        run: |
+          echo "AWS Account ID: $(aws sts get-caller-identity --query Account --output text)"
+          echo "AWS Region: $AWS_REGION"
+          echo "Checking ECR repositories..."
+          aws ecr describe-repositories --region $AWS_REGION
+
+      - name: Manually Login to Amazon ECR
+        run: |
+          export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "Logging into ECR for account $AWS_ACCOUNT_ID in region $AWS_REGION"
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
 
       - name: Check ECR Access
         run: aws ecr describe-repositories --region us-east-1
