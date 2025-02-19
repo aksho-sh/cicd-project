@@ -12,6 +12,7 @@ export default function Home(){
         <li>This is another list that was created 7:55 2/18/2025</li>
         <li>Another element in the list, lets see if this works.</li>
         <li>Please oh please, can this work.</li>
+        <li>I see some hope in the end.</li>
       </ul>
     </div>
   );
